@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using static System.Console;
 
 namespace BrendanTheSodaMachine;
@@ -6,8 +7,10 @@ namespace BrendanTheSodaMachine;
 
 public class VendingMachine
 {
-	public string Name { get; }
-	public int Slots { get; }
+    public string Name { get; }
+    public int Slots { get; }
+    public string separator = "----------------------------------------------------";
+
 
     private BankAccount BankAccount { get; }
 
@@ -17,19 +20,17 @@ public class VendingMachine
     {
 		Name = name;
 		Slots = slots;
-
     }
 
 	public void HelloVendingMachine()
 	{
- 
-        WriteLine("----------------------------------------------------");
+        WriteLine(separator);
         ForegroundColor = ConsoleColor.Green;
 		WriteLine($"Hello {Name}!");
         ForegroundColor = ConsoleColor.Yellow;
 		WriteLine($"Hi {account.Owner}, what can I offer you today?");
 		ForegroundColor = ConsoleColor.White;
-        WriteLine("----------------------------------------------------");
+        WriteLine(separator);
     }
 
     public void Start()
@@ -53,11 +54,10 @@ public class VendingMachine
         if (keyPressed == ConsoleKey.Escape)
         {
             Clear();
-            WriteLine("----------------------------------------------------");
             ForegroundColor = ConsoleColor.Yellow;
-            WriteLine("What's it gonna be friendo?");
+            WriteLine("What more can I do for you? :)");
             ForegroundColor = ConsoleColor.White;
-            WriteLine("----------------------------------------------------");
+            WriteLine(separator);
             RunMainMenu();
         }
     }
@@ -86,11 +86,9 @@ public class VendingMachine
         {
             Clear();
             ForegroundColor = ConsoleColor.Green;
-            WriteLine("----------------------------------------------------");
             WriteLine(options[0]);
-            WriteLine("----------------------------------------------------");
-            ForegroundColor = ConsoleColor.Yellow;
-            //WriteLine("**Brendan shows a list of items available for purchase**");
+            ForegroundColor = ConsoleColor.White;
+            WriteLine(separator);
             ShowConsumables();
             ResetColor();
             GoBack();
@@ -101,7 +99,6 @@ public class VendingMachine
         {
             Clear();
             ForegroundColor = ConsoleColor.Green;
-            WriteLine("----------------------------------------------------");
             WriteLine(options[1]);
             WriteLine("----------------------------------------------------");
             ForegroundColor = ConsoleColor.Yellow;
@@ -132,30 +129,107 @@ public class VendingMachine
             WriteLine("Ciao!");
         }
     }
-   
 
     private readonly List<Consumable> Items = new List<Consumable>();
 
     public void AddConsumables()
     {
-        Items.Add(new Consumable("NiCola", 10, 7));
-        Items.Add(new Consumable("NiCola Sakura", 10, 12));
-        Items.Add(new Consumable("NiCola Lime", 10, 14));
-        Items.Add(new Consumable("Shwabshwab Blue", 15, 13));
-        Items.Add(new Consumable("Shwabshwab Grape", 15, 2));
-        Items.Add(new Consumable("Ab-synth", 20, 6));
+
+        Items.Add(new Consumable("1", "NiCola", 7));
+        Items.Add(new Consumable("2", "NiCola Sakura", 12));
+        Items.Add(new Consumable("3", "NiCola Lime", 12));
+        Items.Add(new Consumable("4", "Shwabshwab Blue", 15));
+        Items.Add(new Consumable("5", "Shwabshwab Grape", 15));
+        Items.Add(new Consumable("6", "Ab-synth", 20));
     }
 
     public void ShowConsumables()
     {
-        
-
         foreach (var item in Items)
         {
-            WriteLine($"{item.Name} | Price: {item.Price}");
+            WriteLine($"[{item.Id}] - {item.Name} | Price: {item.Price}");
+        }
+
+        PurchaseSoda();
+    }
+
+    public void PurchaseSoda()
+    {
+        WriteLine("\nPlease select a number to buy Soda:");
+
+        string sodaChoice = ReadLine();
+        int balance = account.GetBalance();
+        int sodaId = Int32.Parse(sodaChoice) - 1;
+        int itemPrice = Items[sodaId].Price;
+        string receipt = itemPrice + " eurodollars was drawn from your bank account. Enjoy your " + Items[sodaId].Name + "\nYour balance is now: " + balance;
+
+
+        if (sodaChoice == "1")
+        {
+            PurchaseSuccess();
+
+            //WriteLine("Soda id: " + sodaId);
+            //WriteLine("Soda choice: " + sodaChoice);
+
+            WriteLine(receipt);
+            GoBack();
+        }
+
+        if (sodaChoice == "2")
+        {
+            PurchaseSuccess();
+
+            WriteLine(receipt);
+            GoBack();
+        }
+
+        if (sodaChoice == "3")
+        {
+            PurchaseSuccess();
+
+            WriteLine(receipt);
+            GoBack();
+        }
+
+        if (sodaChoice == "4")
+        {
+            PurchaseSuccess();
+
+            WriteLine(receipt);
+            GoBack();
+        }
+
+        if (sodaChoice == "5")
+        {
+            PurchaseSuccess();
+
+            WriteLine(receipt);
+            GoBack();
+        }
+
+        if (sodaChoice == "6")
+        {
+            PurchaseSuccess();
+
+            WriteLine(receipt);
+            GoBack();
+        }
+        else if (sodaChoice != "1" || sodaChoice != "2" || sodaChoice != "3" || sodaChoice != "4" || sodaChoice != "5" || sodaChoice != "6")
+        {
+            WriteLine($"Are you blind {account.Owner}? Please select a valid option");
         }
     }
 
+    public void PurchaseSuccess()
+    {
+
+        WriteLine(separator);
+        Console.ForegroundColor = ConsoleColor.Yellow;
+        WriteLine($"Pleasure doing business with you {account.Owner}!");
+        Console.ForegroundColor = ConsoleColor.White;
+        WriteLine(separator);
+        Console.ForegroundColor = ConsoleColor.Magenta;
+    }
 }
 
 

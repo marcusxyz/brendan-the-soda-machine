@@ -1,14 +1,14 @@
 ﻿class Consumable
 {
+	public string Id { get; }
 	public string Name { get; }
 	public int Price { get; }
-	public int Stock { get; }
 
-	public Consumable(string name, int price, int stock)
+	public Consumable(string id, string name, int price)
 	{
 		Name = name;
 		Price = price;
-		Stock = stock;
+		Id = id;
 	}
 }
 

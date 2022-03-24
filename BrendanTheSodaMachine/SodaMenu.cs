@@ -18,13 +18,5 @@ public class SodaMenu
         Items.Add(new Consumable("5", "Shwabshwab Grape", 15));
         Items.Add(new Consumable("6", "Ab-synth", 20));
     }
-
-    public void ShowConsumables()
-    {
-        foreach (var item in Items)
-        {
-            WriteLine($"{item.Id} - {item.Name} | Price: {item.Price}");
-        }
-    }
 }
 

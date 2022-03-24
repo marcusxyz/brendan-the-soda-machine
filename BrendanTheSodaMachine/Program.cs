@@ -1,7 +1,7 @@
 ﻿using System;
 using static System.Console;
 
-namespace BrendanTheSodaMachine;
+using BrendanTheSodaMachine;
 /************
 
 Implement vending machine:
@@ -14,11 +14,6 @@ Implement vending machine:
 
 *************/
 
-class Program
-{
-    static void Main(string[] args)
-    {
-    var brendan = new VendingMachine("Brendan", 80);
-    brendan.Start();
-    }
-}
+var account = new BankAccount("Mr.Silverhand", 1000);
+var brendan = new VendingMachine("Brendan", 80, account);
+brendan.Start();

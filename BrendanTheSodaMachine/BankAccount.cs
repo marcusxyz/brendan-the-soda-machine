@@ -3,10 +3,10 @@ using static System.Console;
 
 namespace BrendanTheSodaMachine;
 
-class BankAccount
+public class BankAccount
 {
 	public string Owner { get; }
-	private int Balance { get; set; } = 250;
+	public int Balance { get; set; } = 250;
 
 	public BankAccount(string name, int balance)
 	{

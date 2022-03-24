@@ -1,43 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
 using static System.Console;
-
-namespace BrendanTheSodaMachine;
-
+using BrendanTheSodaMachine;
 
 public class VendingMachine
 {
     public string Name { get; }
     public int Slots { get; }
+    public BankAccount Account { get; }
     public string separator = "----------------------------------------------------";
 
+    SodaMenu sodamenu = new SodaMenu();
+    
 
-    private BankAccount BankAccount { get; }
-
-    readonly BankAccount account = new BankAccount("Mr.Silverhand", 1000);
-
-    public VendingMachine(string name, int slots)
+    public VendingMachine(string name, int slots, BankAccount account)
     {
 		Name = name;
 		Slots = slots;
+        Account = account;
     }
 
-	public void HelloVendingMachine()
+	public void HelloVendingMachine(BankAccount account)
 	{
         WriteLine(separator);
         ForegroundColor = ConsoleColor.Green;
 		WriteLine($"Hello {Name}!");
         ForegroundColor = ConsoleColor.Yellow;
-		WriteLine($"Hi {account.Owner}, what can I offer you today?");
+		WriteLine($"Hi {Account.Owner}, what can I offer you today?");
 		ForegroundColor = ConsoleColor.White;
         WriteLine(separator);
     }
 
     public void Start()
     {
-        HelloVendingMachine();
+        HelloVendingMachine(Account);
         AddConsumables();
-        RunMainMenu();
+        RunMainMenu(Account);
     }
 
 
@@ -58,11 +56,11 @@ public class VendingMachine
             WriteLine("What more can I do for you? :)");
             ForegroundColor = ConsoleColor.White;
             WriteLine(separator);
-            RunMainMenu();
+            RunMainMenu(Account);
         }
     }
 
-    public void RunMainMenu()
+    public void RunMainMenu(BankAccount account)
     {
         List<string> options = new List<string>
         {
@@ -74,7 +72,6 @@ public class VendingMachine
 
         };
             
-
         foreach (string option in options)
         {
             WriteLine(option);
@@ -102,7 +99,7 @@ public class VendingMachine
             WriteLine(options[1]);
             WriteLine("----------------------------------------------------");
             ForegroundColor = ConsoleColor.Yellow;
-            WriteLine($"Your current balance is {account.GetBalance()} eurodollars");
+            WriteLine($"Your current balance is {account.Balance} eurodollars");
             GoBack();
         }
 
@@ -127,6 +124,7 @@ public class VendingMachine
             WriteLine("Cya Brendan 👋");
             ForegroundColor = ConsoleColor.Yellow;
             WriteLine("Ciao!");
+            Environment.Exit(0);
         }
     }
 
@@ -158,79 +156,51 @@ public class VendingMachine
         WriteLine("\nPlease select a number to buy Soda:");
 
         string sodaChoice = ReadLine();
-        int balance = account.GetBalance();
+        int balance = Account.Balance;
         int sodaId = Int32.Parse(sodaChoice) - 1;
         int itemPrice = Items[sodaId].Price;
-        string receipt = itemPrice + " eurodollars was drawn from your bank account. Enjoy your " + Items[sodaId].Name + "\nYour balance is now: " + balance;
 
-
-        if (sodaChoice == "1")
+        void ShowReceipt(int balance)
         {
-            PurchaseSuccess();
-
-            //WriteLine("Soda id: " + sodaId);
-            //WriteLine("Soda choice: " + sodaChoice);
-
-            WriteLine(receipt);
-            GoBack();
+           WriteLine(itemPrice + " eurodollars was drawn from your bank account. Enjoy your " + Items[sodaId].Name + "\nYour balance is now: " + balance);
         }
 
-        if (sodaChoice == "2")
-        {
-            PurchaseSuccess();
 
-            WriteLine(receipt);
-            GoBack();
+        if (balance < itemPrice)
+        {
+            WriteLine("Hmm.. Looks like you don't have enough to buy this soda");
         }
 
-        if (sodaChoice == "3")
+        if (Int32.TryParse(sodaChoice, out int sodaInt))
         {
-            PurchaseSuccess();
-
-            WriteLine(receipt);
-            GoBack();
+            for (int i = 0; i < Items.Count; i++)
+            {
+                if (sodaInt == i + 1)
+                {
+                    WriteLine(Account.Balance);
+                    Account.Balance -= itemPrice;
+                    WriteLine(Account.Balance);
+                    PurchaseSuccess();
+                    ShowReceipt(Account.Balance);
+                    GoBack();
+                }
+            }
         }
 
-        if (sodaChoice == "4")
-        {
-            PurchaseSuccess();
+    }
 
-            WriteLine(receipt);
-            GoBack();
-        }
-
-        if (sodaChoice == "5")
-        {
-            PurchaseSuccess();
-
-            WriteLine(receipt);
-            GoBack();
-        }
-
-        if (sodaChoice == "6")
-        {
-            PurchaseSuccess();
-
-            WriteLine(receipt);
-            GoBack();
-        }
-        else if (sodaChoice != "1" || sodaChoice != "2" || sodaChoice != "3" || sodaChoice != "4" || sodaChoice != "5" || sodaChoice != "6")
-        {
-            WriteLine($"Are you blind {account.Owner}? Please select a valid option");
-        }
+    public void TryAgain()
+    {
+        WriteLine($"Are you blind {Account.Owner}? Please select a valid option");
     }
 
     public void PurchaseSuccess()
     {
-
         WriteLine(separator);
         Console.ForegroundColor = ConsoleColor.Yellow;
-        WriteLine($"Pleasure doing business with you {account.Owner}!");
+        WriteLine($"Pleasure doing business with you {Account.Owner}!");
         Console.ForegroundColor = ConsoleColor.White;
         WriteLine(separator);
         Console.ForegroundColor = ConsoleColor.Magenta;
     }
 }
-
-
-

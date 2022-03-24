@@ -2,6 +2,7 @@
 using static System.Console;
 
 using BrendanTheSodaMachine;
+using System.Collections;
 /************
 
 Implement vending machine:
@@ -19,5 +20,6 @@ Random r = new Random();
 int rInt = r.Next(0, 50);
 
 var account = new BankAccount("Mr.Silverhand", rInt);
-var brendan = new VendingMachine("Brendan", 80, account);
+Stack transactionLog = new Stack();
+var brendan = new VendingMachine("Brendan", 80, account, transactionLog);
 brendan.Start();

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using static System.Console;
 using BrendanTheSodaMachine;
@@ -8,19 +9,20 @@ public class VendingMachine
     public string Name { get; }
     public int Slots { get; }
     public BankAccount Account { get; }
+    public Stack TransactionLog { get; }
     public string separator = "----------------------------------------------------";
 
     SodaMenu sodamenu = new SodaMenu();
-    
 
-    public VendingMachine(string name, int slots, BankAccount account)
+    public VendingMachine(string name, int slots, BankAccount account, Stack transactionLog)
     {
 		Name = name;
 		Slots = slots;
         Account = account;
+        TransactionLog = transactionLog;
     }
 
-	public void HelloVendingMachine(BankAccount account)
+	public void HelloVendingMachine(BankAccount account, Stack transactionLog)
 	{
         WriteLine(separator);
         ForegroundColor = ConsoleColor.Green;
@@ -33,11 +35,10 @@ public class VendingMachine
 
     public void Start()
     {
-        HelloVendingMachine(Account);
+        HelloVendingMachine(Account, TransactionLog);
         AddConsumables();
-        RunMainMenu(Account);
+        RunMainMenu(Account, TransactionLog);
     }
-
 
     private void GoBack()
     {
@@ -56,11 +57,11 @@ public class VendingMachine
             WriteLine("What more can I do for you? :)");
             ForegroundColor = ConsoleColor.White;
             WriteLine(separator);
-            RunMainMenu(Account);
+            RunMainMenu(Account, TransactionLog);
         }
     }
 
-    public void RunMainMenu(BankAccount account)
+    public void RunMainMenu(BankAccount account, Stack transactionLog)
     {
         List<string> options = new List<string>
         {
@@ -86,7 +87,7 @@ public class VendingMachine
             WriteLine(options[0]);
             ForegroundColor = ConsoleColor.White;
             WriteLine(separator);
-            ShowConsumables();
+            ShowConsumables(transactionLog);
             ResetColor();
             GoBack();
 
@@ -106,14 +107,20 @@ public class VendingMachine
         if (choice == "3")
         {
             Clear();
-            WriteLine("Withdraw eurodollars");
+            ForegroundColor = ConsoleColor.Green;
+            WriteLine(options[2]);
+            WriteLine(separator);
+            Withdraw();
             GoBack();
         }
 
         if (choice == "4")
         {
             Clear();
-            WriteLine("Show purchase history");
+            ForegroundColor = ConsoleColor.Green;
+            WriteLine(options[3]);
+            WriteLine(separator);
+            DisplayTransactions(transactionLog);
             GoBack();
         }
 
@@ -130,12 +137,12 @@ public class VendingMachine
         if (Int32.TryParse(choice, out int choiceInt) && choiceInt > 5 || choiceInt < 1)
         {
             ErrorMessage();
-            RunMainMenu(account);
+            RunMainMenu(Account, TransactionLog);
         }
         else
         {
             ErrorMessage();
-            RunMainMenu(account);
+            RunMainMenu(Account, TransactionLog);
         }
     }
 
@@ -152,30 +159,51 @@ public class VendingMachine
         Items.Add(new Consumable("6", "Ab-synth", 20));
     }
 
-    public void ShowConsumables()
+    public void ShowConsumables(Stack transactionLog)
     {
         foreach (var item in Items)
         {
             WriteLine($"[{item.Id}] - {item.Name} | Price: {item.Price}");
         }
-        PurchaseSoda();
+        PurchaseSoda(transactionLog);
     }
 
-    public void PurchaseSoda()
+    public void Withdraw()
+    {
+        ForegroundColor = ConsoleColor.Yellow;
+        WriteLine("Alright, enter the amount you to want withdraw below.");
+        ForegroundColor = ConsoleColor.White;
+        string withdraw = ReadLine();
+
+        int balance = Account.Balance;
+
+        if (!Int32.TryParse(withdraw, out int withdrawInt) || withdrawInt < 1)
+        {
+            ErrorMessage();
+            WriteLine(withdrawInt);
+            Withdraw();
+        } else
+        {
+            Account.Balance += withdrawInt;
+            ForegroundColor = ConsoleColor.Magenta;
+            WriteLine($"{withdrawInt} eurodollars has been added to your account.");
+        }
+
+    }
+
+    public void PurchaseSoda(Stack transactionLog)
     {
         WriteLine("\nPlease select a number to buy Soda:");
 
         string sodaChoice = ReadLine();
 
         int balance = Account.Balance;
-        //int sodaId = Int32.Parse(sodaChoice) - 1;
-        //Int32.TryParse(sodaChoice, out int sodaInt);
 
-        if (!Int32.TryParse(sodaChoice, out int sodaInt) || sodaInt > 5 || sodaInt < 1)
+        if (!Int32.TryParse(sodaChoice, out int sodaInt) || sodaInt > 6 || sodaInt < 1)
         {
             ErrorMessage();
             WriteLine(sodaInt);
-            PurchaseSoda();
+            PurchaseSoda(transactionLog);
         }
 
         int sodaId = sodaInt - 1;
@@ -198,24 +226,24 @@ public class VendingMachine
             {
                 if (sodaInteger == i + 1)
                 {
-                    //WriteLine(Account.Balance);
                     Account.Balance -= itemPrice;
-                    //WriteLine(Account.Balance);
+                    //LogTransactions();
+                    transactionLog.Push($"{Items[sodaId].Name} \t {itemPrice}");
                     PurchaseSuccess();
                     ShowReceipt(Account.Balance);
                     GoBack();
                 }
-
-                if (sodaInt < Items.Count)    
-                {
-                    WriteLine("I don't have that sorry!");
-                    PurchaseSoda();
-                }
             }
         }
+    }
 
-        
-
+    public void ErrorMessage()
+    {
+        WriteLine(separator);
+        ForegroundColor = ConsoleColor.Yellow;
+        WriteLine($"That's not a valid input {Account.Owner}..");
+        ForegroundColor = ConsoleColor.White;
+        WriteLine(separator);
     }
 
     public void PurchaseDeclined()
@@ -237,12 +265,20 @@ public class VendingMachine
         Console.ForegroundColor = ConsoleColor.Magenta;
     }
 
-    public void ErrorMessage()
+    public void DisplayTransactions(Stack transactionLog)
     {
-        WriteLine(separator);
-        ForegroundColor = ConsoleColor.Yellow;
-        WriteLine($"That's not a valid choice {Account.Owner}..");
+        // Displays the properties and values of the Stack.
         ForegroundColor = ConsoleColor.White;
-        WriteLine(separator);
+        Console.WriteLine("Your transactions");
+        Console.WriteLine("\tCount:    {0}", transactionLog.Count);
+        Console.Write("\tValues:");
+        PrintValues(transactionLog);
+    }
+
+    public static void PrintValues(IEnumerable myCollection)
+    {
+        foreach (Object obj in myCollection)
+            Console.Write("    {0}", obj);
+        Console.WriteLine();
     }
 }

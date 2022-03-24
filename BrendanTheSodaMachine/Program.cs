@@ -14,6 +14,10 @@ Implement vending machine:
 
 *************/
 
-var account = new BankAccount("Mr.Silverhand", 1000);
+// Get randon int to insert into Bank Account
+Random r = new Random();
+int rInt = r.Next(0, 50);
+
+var account = new BankAccount("Mr.Silverhand", rInt);
 var brendan = new VendingMachine("Brendan", 80, account);
 brendan.Start();

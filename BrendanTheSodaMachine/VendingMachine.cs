@@ -97,7 +97,7 @@ public class VendingMachine
             Clear();
             ForegroundColor = ConsoleColor.Green;
             WriteLine(options[1]);
-            WriteLine("----------------------------------------------------");
+            WriteLine(separator);
             ForegroundColor = ConsoleColor.Yellow;
             WriteLine($"Your current balance is {account.Balance} eurodollars");
             GoBack();
@@ -126,6 +126,17 @@ public class VendingMachine
             WriteLine("Ciao!");
             Environment.Exit(0);
         }
+
+        if (Int32.TryParse(choice, out int choiceInt) && choiceInt > 5 || choiceInt < 1)
+        {
+            ErrorMessage();
+            RunMainMenu(account);
+        }
+        else
+        {
+            ErrorMessage();
+            RunMainMenu(account);
+        }
     }
 
     private readonly List<Consumable> Items = new List<Consumable>();
@@ -147,7 +158,6 @@ public class VendingMachine
         {
             WriteLine($"[{item.Id}] - {item.Name} | Price: {item.Price}");
         }
-
         PurchaseSoda();
     }
 
@@ -156,42 +166,65 @@ public class VendingMachine
         WriteLine("\nPlease select a number to buy Soda:");
 
         string sodaChoice = ReadLine();
+
         int balance = Account.Balance;
-        int sodaId = Int32.Parse(sodaChoice) - 1;
+        //int sodaId = Int32.Parse(sodaChoice) - 1;
+        //Int32.TryParse(sodaChoice, out int sodaInt);
+
+        if (!Int32.TryParse(sodaChoice, out int sodaInt) || sodaInt > 5 || sodaInt < 1)
+        {
+            ErrorMessage();
+            WriteLine(sodaInt);
+            PurchaseSoda();
+        }
+
+        int sodaId = sodaInt - 1;
         int itemPrice = Items[sodaId].Price;
 
         void ShowReceipt(int balance)
         {
-           WriteLine(itemPrice + " eurodollars was drawn from your bank account. Enjoy your " + Items[sodaId].Name + "\nYour balance is now: " + balance);
+           WriteLine($"Enjoy your {Items[sodaId].Name} \nYour balance is now: {balance} eurodollars.");
         }
 
-
-        if (balance < itemPrice)
+        if (Account.Balance < itemPrice)
         {
-            WriteLine("Hmm.. Looks like you don't have enough to buy this soda");
+            PurchaseDeclined();
+            GoBack();
         }
 
-        if (Int32.TryParse(sodaChoice, out int sodaInt))
+        if (Int32.TryParse(sodaChoice, out int sodaInteger))
         {
             for (int i = 0; i < Items.Count; i++)
             {
-                if (sodaInt == i + 1)
+                if (sodaInteger == i + 1)
                 {
-                    WriteLine(Account.Balance);
+                    //WriteLine(Account.Balance);
                     Account.Balance -= itemPrice;
-                    WriteLine(Account.Balance);
+                    //WriteLine(Account.Balance);
                     PurchaseSuccess();
                     ShowReceipt(Account.Balance);
                     GoBack();
                 }
+
+                if (sodaInt < Items.Count)    
+                {
+                    WriteLine("I don't have that sorry!");
+                    PurchaseSoda();
+                }
             }
         }
 
+        
+
     }
 
-    public void TryAgain()
+    public void PurchaseDeclined()
     {
-        WriteLine($"Are you blind {Account.Owner}? Please select a valid option");
+        WriteLine(separator);
+        Console.ForegroundColor = ConsoleColor.Yellow;
+        WriteLine("Poor soul.. You don't have enough to buy this soda.");
+        Console.ForegroundColor = ConsoleColor.White;
+        WriteLine(separator);
     }
 
     public void PurchaseSuccess()
@@ -202,5 +235,14 @@ public class VendingMachine
         Console.ForegroundColor = ConsoleColor.White;
         WriteLine(separator);
         Console.ForegroundColor = ConsoleColor.Magenta;
+    }
+
+    public void ErrorMessage()
+    {
+        WriteLine(separator);
+        ForegroundColor = ConsoleColor.Yellow;
+        WriteLine($"That's not a valid choice {Account.Owner}..");
+        ForegroundColor = ConsoleColor.White;
+        WriteLine(separator);
     }
 }

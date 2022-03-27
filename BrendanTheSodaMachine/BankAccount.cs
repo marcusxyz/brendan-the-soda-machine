@@ -6,7 +6,7 @@ namespace BrendanTheSodaMachine;
 public class BankAccount
 {
 	public string Owner { get; }
-	public int Balance { get; set; } = 250;
+	public int Balance { get; set; }
 
 	public BankAccount(string name, int balance)
 	{

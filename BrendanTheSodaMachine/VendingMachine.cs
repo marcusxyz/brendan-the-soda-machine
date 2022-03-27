@@ -7,17 +7,13 @@ using BrendanTheSodaMachine;
 public class VendingMachine
 {
     public string Name { get; }
-    public int Slots { get; }
     public BankAccount Account { get; }
     public Stack TransactionLog { get; }
     public string separator = "----------------------------------------------------";
 
-    SodaMenu sodamenu = new SodaMenu();
-
-    public VendingMachine(string name, int slots, BankAccount account, Stack transactionLog)
+    public VendingMachine(string name, BankAccount account, Stack transactionLog)
     {
 		Name = name;
-		Slots = slots;
         Account = account;
         TransactionLog = transactionLog;
     }
@@ -148,17 +144,17 @@ public class VendingMachine
         }
     }
 
-    private readonly List<Consumable> Items = new List<Consumable>();
+    private readonly List<Beverage> Items = new List<Beverage>();
 
     private void AddConsumables()
     {
 
-        Items.Add(new Consumable("1", "NiCola", 7));
-        Items.Add(new Consumable("2", "NiCola Sakura", 12));
-        Items.Add(new Consumable("3", "NiCola Lime", 12));
-        Items.Add(new Consumable("4", "Shwabshwab Blue", 15));
-        Items.Add(new Consumable("5", "Shwabshwab Grape", 15));
-        Items.Add(new Consumable("6", "Ab-synth", 20));
+        Items.Add(new Beverage("1", "NiCola", 7));
+        Items.Add(new Beverage("2", "NiCola Sakura", 12));
+        Items.Add(new Beverage("3", "NiCola Lime", 12));
+        Items.Add(new Beverage("4", "Shwabshwab Blue", 15));
+        Items.Add(new Beverage("5", "Shwabshwab Grape", 15));
+        Items.Add(new Beverage("6", "Ab-synth", 20));
     }
 
     private void ShowConsumables(Stack transactionLog)

@@ -29,7 +29,7 @@ public class VendingMachine
 	{
         WriteLine(separator);
         ForegroundColor = ConsoleColor.Yellow;
-		WriteLine($"Hey there, stranger!\nIm' Brendan, your friendly, neighborhood S.C.S.M\nand the nicest AI in all of Night City!\n\nYou can select from a wide range of beverages or\njust drop by for a chat anytime! :)\n");
+		WriteLine($"Hey there, stranger!\nI'm Brendan, your friendly, neighborhood S.C.S.M\nand the nicest AI in all of Night City!\n\nYou can select from a wide range of beverages or\njust drop by for a chat anytime! :)\n");
         ForegroundColor = ConsoleColor.Green;
 		WriteLine($"Hello {Name}! Uhmmm...");
 		ForegroundColor = ConsoleColor.White;
